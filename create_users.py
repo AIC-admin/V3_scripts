@@ -2,7 +2,7 @@
 import subprocess
 import string
 import random
-
+import shlex
 def get_random_password():
 	symbols = ['*', '%', '^'] # Can add more
 	password = "aic"
@@ -30,10 +30,11 @@ class User:
 		print("Phone: " + self.phone)
 
 def get_ipa_create_user_cmd(user):
-	ipa_command = "ipa user-add {name} --first={firstName} --last={lastName} --email={email} --phone={phone} --shell=/bin/bash".format(
+	ipa_command = "ipa user-add {name} --first='{firstName}' --last='{lastName}' --email={email} --phone={phone} --shell=/bin/bash".format(
 							name=user.name, firstName=user.firstName, lastName=user.lastName, email=user.email, phone=user.phone)
 	print(ipa_command)
 	return ipa_command
+
 def get_change_ipa_user_password_cmd(user):
 	ipa_command = "ipa passwd {username} {password}".format(username=user.name, password=user.password)
 	print(ipa_command)
@@ -57,6 +58,9 @@ def get_chmod_cmd(user):
 	chmod_command = "chmod -R 770 /mnt/beegfs/{name}".format(name=user.name)
 	return chmod_command
 
+def get_add_to_admins_grp(user):
+	grp_add_command = "ipa group-add-member sysadmin --users={name}".format(name=user.name)
+	return grp_add_command 
 users = []
 users.append(User("mmagdy", "Mohammed", "Magdy", "m.magdy@mcit.gov.eg", "01068333364"))
 users.append(User("mrehan", "Mohammed", "Rehan", "mohamed.rehan@mcit.gov.eg", "0122550461"))
@@ -65,6 +69,12 @@ users.append(User("akhalaf", "Ayman", "Khalafallah", "A.Khalafallah@mcit.gov.eg"
 
 #users.append(User("test10", "Ayman", "Khalafallah", "A.Khalafallah@mcit.gov.eg", "01001360078"))
 
+admins = []
+#admins.append(User("amagdy", "Amr", "Magdy", "A.Magdy@mcit.gov.eg", ""))
+admins.append(User("ahameed", "Ahmed", "Abd El-Hameed", "A.Abdelhameed@mcit.gov.eg", ""))
+#admins.append(User("dmahmoud", "Dina", "Mahmoud", "DMohamed@mcit.gov.eg", ""))
+#admins.append(User("wahmed", "Walied", "Ahmed", "walied2@protonmail.com", ""))
+#admins.append(User("gnabil", "George", "Nabil", "g.nabil@mcit.gov.eg", ""))
 """
 testUser = User("test6", "Test", "12", "test@test.testing")
 print("CREATING USER WITH IPA...")
@@ -108,36 +118,53 @@ print(out6, err6)
 
 def run_process(user, command):
 	print("RUNNING: {cmd}").format(cmd=command)
-	p = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+	p = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
 	out, err = p.communicate()
 	print(out)
 
+choice = int(input("Enter 1 to create ordinary users, or 2 to create admin users:"))
 
 
-for user in users:
-	print("+++++++++++++++++++++++++++++++++++++++++")	
-	print("CREATING USER {name} WITH IPA...\n").format(name=user.name)
-	print("+++++++++++++++++++++++++++++++++++++++++")
-	run_process(user, get_ipa_create_user_cmd(user))
+if choice == 1:
+	for user in users:
+		print("+++++++++++++++++++++++++++++++++++++++++")	
+		print("CREATING USER {name} WITH IPA...\n").format(name=user.name)
+		print("+++++++++++++++++++++++++++++++++++++++++")
+		run_process(user, get_ipa_create_user_cmd(user))
 
-	print("GENERATING RANDOM PASSWORD FOR {name}...".format(name=user.name))
-	run_process(user,get_change_ipa_user_password_cmd(user))
+		print("GENERATING RANDOM PASSWORD FOR {name}...".format(name=user.name))
+		run_process(user,get_change_ipa_user_password_cmd(user))
 
-	print("CREATING {name} UNDER /mnt/beegfs/...".format(name=user.name))
-	run_process(user, get_create_beegfs_dir(user))
-	# Add user dir under /mnt/beegfs/
+		print("CREATING {name} UNDER /mnt/beegfs/...".format(name=user.name))
+		run_process(user, get_create_beegfs_dir(user))
+		# Add user dir under /mnt/beegfs/
 
-	print("CHANGING OWNER OF /mnt/beegfs/{name}".format(name=user.name))
-	# Add user dir under /mnt/beegfs/
-	run_process(user, get_chown_cmd(user))
+		print("CHANGING OWNER OF /mnt/beegfs/{name}".format(name=user.name))
+		# Add user dir under /mnt/beegfs/
+		run_process(user, get_chown_cmd(user))
 
-	print("CHANGING GROUP OF /mnt/beegfs/{name}".format(name=user.name))
-	# Add user dir under /mnt/beegfs/
-	run_process(user, get_chgrp_cmd(user))
+		print("CHANGING GROUP OF /mnt/beegfs/{name}".format(name=user.name))
+		# Add user dir under /mnt/beegfs/
+		run_process(user, get_chgrp_cmd(user))
 
-	print("CHANGING MOD OF /mnt/beegfs/{name}".format(name=user.name))
-	# Add user dir under /mnt/beegfs/
-	run_process(user, get_chmod_cmd(user))
-	
-	
-	print("---------")
+		print("CHANGING MOD OF /mnt/beegfs/{name}".format(name=user.name))
+		# Add user dir under /mnt/beegfs/
+		run_process(user, get_chmod_cmd(user))
+		
+		
+		print("---------")
+elif choice == 2:
+	for admin in admins:
+		print("+++++++++++++++++++++++++++++++++++++++++")	
+		print("CREATING ADMIN {name} WITH IPA...\n").format(name=admin.name)
+		print("+++++++++++++++++++++++++++++++++++++++++")
+		run_process(admin, get_ipa_create_user_cmd(admin))
+
+		print("GENERATING RANDOM PASSWORD FOR {name}...".format(name=admin.name))
+		run_process(admin,get_change_ipa_user_password_cmd(admin))
+
+		print("ADDING ADMIN {name} TO GROUP admins".format(name=admin.name))
+		run_process(admin, get_add_to_admins_grp(admin))
+		print("-----------")
+else:
+	print("Sorry. Unrecognizable choice")
