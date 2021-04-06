@@ -1,0 +1,37 @@
+# Built with EasyBuild version 4.3.3 on 2021-03-31_13-23-21
+easyblock = 'PythonPackage'
+
+local_prefix = 'NLPL-'
+
+local_original_name = 'dllogger'
+name = local_prefix + local_original_name
+version = '0.1.0'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://github.com/NVIDIA/dllogger'
+description = """Minimal logging tool"""
+
+options = {'modulename': 'dllogger'}
+
+toolchain = {'name': 'foss', 'version': '2020b'}
+
+sources = [{
+    'filename': local_original_name + '.tar.gz',
+    'git_config': {
+        'url': 'https://github.com/NVIDIA',
+        'repo_name': 'dllogger',
+        'tag': 'master',
+    },
+}]
+
+dependencies = [
+    ('Python', '3.8.6'),
+]
+
+use_pip = True
+
+sanity_pip_check = True
+
+moduleclass = 'tools'
+
+

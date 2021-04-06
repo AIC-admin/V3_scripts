@@ -1,0 +1,2 @@
+yum -y install freeipa-client ipa-admintools
+ ipa-client-install --unattended  --realm=AIC.GOV.EG --domain=aic.gov.eg  --server=hetero.aic.gov.eg  --mkhomedir  --principal=admin  --password="fr33!Pa@a" --force-join 

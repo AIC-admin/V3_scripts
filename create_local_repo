@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+# remove yum repos 
+rm  /etc/yum.repos.d/C*
+rm /etc/yum.repos.d/local-repository-0.repo
+
+touch /etc/yum.repos.d/local.repo
+
+cat > /etc/yum.repos.d/local.repo << EOF
+[local]
+name=Local Repo
+baseurl=http://hetero:/install/centos7.8/x86_64/
+enabled=1
+gpgcheck=0
+
+EOF
+echo 'hetero:/install	/install	nfs     defaults        0 0' >> /etc/fstab
+yum update -y

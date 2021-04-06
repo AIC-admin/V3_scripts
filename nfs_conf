@@ -1,0 +1,21 @@
+#!/bin/bash
+
+installDir=/install
+if ! grep -Fq "$installDir" /etc/fstab
+then
+	echo "hetero:$installDir	$installDir	nfs     defaults        0 0" >> /etc/fstab
+	mount "hetero:$installDir" "$installDir"
+fi
+sharedDir=/shared
+if ! grep -Fq "$sharedDir" /etc/fstab
+then
+	echo "hetero:$sharedDir	$sharedDir	nfs     defaults        0 0" >> /etc/fstab
+	mount "hetero:$sharedDir" "$sharedDir"
+fi
+homeDir=/home
+if ! grep -Fq "$homeDir" /etc/fstab
+then
+	echo "hetero:$homeDir	$homeDir	nfs     defaults        0 0" >> /etc/fstab
+	mount "hetero:$homeDir" "$homeDir"
+fi	
+

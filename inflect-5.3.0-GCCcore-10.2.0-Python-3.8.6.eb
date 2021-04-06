@@ -1,0 +1,23 @@
+easyblock = 'PythonPackage'
+
+name = 'inflect'
+version = '5.3.0'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://github.com/jaraco/inflect'
+description = "Correctly generate plurals, ordinals, indefinite articles; convert numbers to words"
+
+toolchain = {'name': 'GCCcore', 'version': '10.2.0'}
+
+source_urls = [PYPI_SOURCE]
+sources = [SOURCE_TAR_GZ]
+checksums = ['41a23f6788962e9775e40e2ecfb1d6455d02de315022afeedd3c5dc070019d73']
+
+dependencies = [('Python', '3.8.6')]
+
+download_dep_fail = True
+sanity_pip_check = True
+use_pip = True
+
+
+moduleclass = 'lib'

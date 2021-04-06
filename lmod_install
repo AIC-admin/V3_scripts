@@ -1,0 +1,18 @@
+#!/bin/bash
+# THIS IS REQUIRED FOR EASYBUILD AND MODULEFILES
+
+touch /etc/yum.repos.d/eb.repo
+
+cat > /etc/yum.repos.d/eb.repo << EOF
+[Easybuild]
+name=easybuild
+baseurl=http://hetero:/install/easybuild/
+enabled=1
+gpgcheck=0
+
+EOF
+
+
+yum clean all
+yum install -y tcl tcl-devel lua lua-bitop lua-devel lua-json lua-lpeg lua-posix lua-term
+yum install -y Lmod
